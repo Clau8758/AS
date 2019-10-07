@@ -50,18 +50,16 @@ def move_group_python_interface_tutorial():
   group.set_goal_orientation_tolerance(0.01)
   group.set_goal_tolerance(0.01)
   group.set_goal_joint_tolerance(0.01)
-  group.set_num_planning_attempts(100)
+  group.set_num_planning_attempts(10)
  
 
-
-
-  ## Planning to a Pose goal
+  ######################################################################################################### Planning to a Pose goal - Movement to top of object
   print "============ Generating plan 1"
  
   pose_goal = group.get_current_pose().pose
   waypoints = []
  
-  #pose_goal.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  0.  , 0.))
+  pose_goal.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
   waypoints.append(pose_goal)
   pose_goal.position.x =0.40
   pose_goal.position.y =-0.10
@@ -104,16 +102,14 @@ def move_group_python_interface_tutorial():
   group.execute(plan1,wait=True)
   rospy.sleep(4.)
 
-
-
-  ## second movement - We move towards the bucket which has the same coordinate every time
+  ################################################################################################### second movement - We move towards the bucket which has the same coordinate every time
   pose_goal2 = group.get_current_pose().pose
   waypoints2 = []
-  #pose_goal.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  0.  , 0.))
+  pose_goal2.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  , 0.))
   waypoints.append(pose_goal)
-  pose_goal2.position.x =0.40
-  pose_goal2.position.y =-0.10
-  pose_goal2.position.z =1.2
+  pose_goal2.position.x =0.53
+  pose_goal2.position.y =-0.23
+  pose_goal2.position.z =0.5
   print pose_goal2
  
   #Create waypoints
