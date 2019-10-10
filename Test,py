@@ -13,55 +13,57 @@ import shape_msgs.msg as shape_msgs
 from std_msgs.msg import String
 
 from gazebo_msgs.srv import GetModelState
-from gazebo_msgs.srv import GetWorldProperties
 
-
+#Class defined to contain the name of the object in the scene and a relative fram
 class Block:
     def __init__(self, name, relative_entity_name):
         self._name = name
         self._relative_entity_name = relative_entity_name
 
+Cube_coordinates=[]
+#Class containing a list of block objects and relative objects - the robot_base
 class Tutorial:
-
     _blockListDict = {
-        'block_a': Block('cube1', 'ground_plane'),
-        'block_b': Block('jaco_on_table', 'ground_plane'),
-        'block_b': Block('jaco_on_table', 'ground_plane'),
-        'block_b': Block('jaco_on_table', 'ground_plane'),
-        'block_b': Block('jaco_on_table', 'ground_plane'),
-        'block_b': Block('jaco_on_table', 'ground_plane'),
-
+        'block_a': Block('cube0', 'robot_base'),
+        'block_b': Block('cube1', 'robot_base'),
+        'block_c': Block('cube2', 'robot_base'),
+        'block_d': Block('cube3', 'robot_base'),
+        'block_e': Block('cube4', 'robot_base'),
+        'block_f': Block('cube5', 'robot_base'),
+        'block_g': Block('cube6', 'robot_base'),
+        'block_h': Block('cube7', 'robot_base'),
+        'block_i': Block('bucket', 'ground_plane')
     }
-
-    def show_gazebo_models(self):
-        try:
-            model_coordinates = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-            
-
-            for block in self._blockListDict.itervalues():
-                blockName = str(block._name)
-                resp_coordinates = model_coordinates(blockName, block._relative_entity_name)
-                print '\n'
-                print 'Status.success = ', resp_coordinates.success
-                print(blockName)
-                print("Cube " + str(block._name))
-                print("Valeur de X : " + str(resp_coordinates.pose.position.x))
-                print("Quaternion y : " + str(resp_coordinates.pose.orientation.y))
-                print("Quaternion z : " + str(resp_coordinates.pose.orientation.z))
-                
-
-        except rospy.ServiceException as e:
-            rospy.loginfo("Get Model State service call failed:  {0}".format(e))
-
-#world_prop = rospy.ServiceProxy('/gazebo/get_world_properties', GetWorldProperties)
-#test= world_prop(self.model_names)
-#world_prop = rospy.ServiceProxy('/gazebo/get_world_properties', GetWorldProperties)
-##print(str(world_prop.model_names))
-#print("Hello"+ str(world_prop))
-print("Hello"+ str(rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)))
-
 
 if __name__ == '__main__':
     tuto = Tutorial()
-    tuto.show_gazebo_models()
+    model_coordinates = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+    cube_coord=[]
+    for block in tuto._blockListDict.itervalues():
+      i=0;
+      blockName = str(block._name)
+      resp_coordinates = (model_coordinates(blockName, block._relative_entity_name))
+      if (resp_coordinates.success):
+          cube_coord.append(model_coordinates(blockName, block._relative_entity_name))
+          print '\n'
+          print 'Status.success = ', resp_coordinates.success
+          print(blockName)
+          print("Cube " + str(block._name))
+          print("Valeur de X : " + str(resp_coordinates.pose.position.x))
+          print("Quaternion y : " + str(resp_coordinates.pose.position.y))
+          print("Quaternion z : " + str(resp_coordinates.pose.position.z))
+          print("Valeur de X : " + str(resp_coordinates.pose.orientation.x))
+          print("Quaternion y : " + str(resp_coordinates.pose.orientation.y))
+          print("Quaternion z : " + str(resp_coordinates.pose.orientation.z))
+          print("Quaternion w : " + str(resp_coordinates.pose.orientation.w))
+
+          print("Cube " + str(block._name))
+          i=i+1;
+
+    print(str(cube_coord[1].pose.position.x))
+    print(str(len(cube_coord)))
+
+
+
+
 
