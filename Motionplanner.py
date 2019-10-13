@@ -5,22 +5,24 @@ roslib.load_manifest('hello_ros')
 import sys
 import copy
 import rospy
+import tf_conversions
 import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
+import math
 import shape_msgs.msg as shape_msgs
 from sensor_msgs.msg import JointState
 from numpy import zeros, array, linspace
-from math import ceil
 from std_msgs.msg import String
 from gazebo_msgs.srv import GetModelState
+from Block_classes import *
 
 def move_group_python_mini_project():
-  ## BEGIN MOTION PLANNING
+  ## BEGIN
   ## First initialize moveit_commander and rospy.
-  print "============ Starting motion planning setup"
+  print "============ Starting motionplanning setup"
   moveit_commander.roscpp_initialize(sys.argv)
-  rospy.init_node('move_group_python_interface_mini_project',
+  rospy.init_node('move_group_python_mini_project',
                   anonymous=True)
  
   robot = moveit_commander.RobotCommander()
@@ -38,7 +40,7 @@ def move_group_python_mini_project():
                                       '/move_group/display_planned_path',
                                       moveit_msgs.msg.DisplayTrajectory)
  
-  print "============ Starting motion planning "
+  print "============ Starting"
   ## We can get the name of the reference frame for this robot
   print "============ Reference frame: %s" % group.get_planning_frame()
   ## We can also print the name of the end-effector link for this group
@@ -63,7 +65,7 @@ def move_group_python_mini_project():
     
   pose_goal = group.get_current_pose().pose
   waypoints = []
-  pose_goal.orientation = 			geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
+  pose_goal.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
   waypoints.append(pose_goal)
   pose_goal.position.x =0.1
   pose_goal.position.y =0.15
@@ -106,7 +108,7 @@ def move_group_python_mini_project():
     
         pose_goal = group.get_current_pose().pose
         waypoints = []
-        pose_goal.orientation = 			geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
+        pose_goal.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
         waypoints.append(pose_goal)
         pose_goal.position.x =cube_coord[i].pose.position.x
         pose_goal.position.y =cube_coord[i].pose.position.y
@@ -147,7 +149,7 @@ def move_group_python_mini_project():
         
         pose_goal = group.get_current_pose().pose
         waypoints = []
-        pose_goal.orientation = 			geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
+        pose_goal.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
         waypoints.append(pose_goal)
         pose_goal.position.x =cube_coord[i].pose.position.x
         pose_goal.position.y =cube_coord[i].pose.position.y
@@ -190,7 +192,7 @@ def move_group_python_mini_project():
         
         pose_goal = group.get_current_pose().pose
         waypoints = []
-        pose_goal.orientation = 			geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
+        pose_goal.orientation = geometry_msgs.msg.Quaternion(*tf_conversions.transformations.quaternion_from_euler(0.,  -math.pi/2.  ,0.))
         waypoints.append(pose_goal)
         pose_goal.position.x =cube_coord[i].pose.position.x
         pose_goal.position.y =cube_coord[i].pose.position.y
@@ -239,7 +241,7 @@ def move_group_python_mini_project():
         waypoints.append(pose_goal)
         pose_goal2.position.x = cube_coord[0].pose.position.x
         pose_goal2.position.y =cube_coord[0].pose.position.y
-        pose_goal2.position.z =cube_coord[0].pose.position.z+0.4
+        pose_goal2.position.z =cube_coord[0].pose.position.z+0.55
         print pose_goal2
     
         #Create waypoints
@@ -271,9 +273,26 @@ def move_group_python_mini_project():
 
   	## When finished shut down moveit_commander.
   moveit_commander.roscpp_shutdown()
-
-    ## End of motionplanning function
+ 
+  ## END
   print "============ STOPPING"
   R = rospy.Rate(10)
   while not rospy.is_shutdown():
     R.sleep()
+
+
+if __name__ == '__main__':
+    tuto = container()
+    model_coordinates = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+    cube_coord=[]
+    for block in tuto._blockListDict.itervalues():
+    	i=0;
+    	blockName = str(block._name)
+    	resp_coordinates = (model_coordinates(blockName, block._relative_entity_name))
+    	if (resp_coordinates.success):
+          cube_coord.append(model_coordinates(blockName, block._relative_entity_name))
+          i=i+1;
+try:
+      move_group_python_mini_project()
+except rospy.ROSInterruptException:
+      pass
