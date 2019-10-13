@@ -15,6 +15,8 @@ from math import ceil
 from std_msgs.msg import String
 from gazebo_msgs.srv import GetModelState
 
+currentJointState = JointState()
+
 def jointStatesCallback(msg):
   global currentJointState
   currentJointState = msg
